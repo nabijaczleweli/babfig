@@ -1,0 +1,11 @@
+#!/bin/sh
+# tty="$(tty)"
+tty="/dev/tty"
+exec < "$tty" > "$tty" 2>&1
+
+[ -r /root/secureboot/creds.sh ] && . /root/secureboot/creds.sh
+[ -z "$KBUILD_SIGN_PIN" ] && read -rp 'DB certificate password: ' KBUILD_SIGN_PIN
+export KBUILD_SIGN_PIN
+
+echo Signing "$2" for kernel "$1"…
+exec "/lib/modules/$1/build/scripts/sign-file" sha256 ~root/secureboot/db.key ~root/secureboot/db.der "$2"
