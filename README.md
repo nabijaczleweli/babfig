@@ -8,3 +8,7 @@ It's like [`i3status++`](//github.com/nabijaczleweli/topfig/blob/master/README.m
 
 ### [`secureboot`](secureboot)
 A DKMS sign helper for (semi-)automatic signing built modules and notes on generating keys.
+
+### [`screen-rotator`](screen-rotator)
+Automatic screen rotation through the power of `/dev/iio:device0` and unsavoury use of xinput(1).
+Should even be relatively portable, though heed the big comment at the top.
