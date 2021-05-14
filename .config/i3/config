@@ -6,18 +6,17 @@ set $mod Mod4
 set $alt Mod1
 
 # Default font
-font pango:monospace 8
+font pango:monospace 10
 
 # Disable screen after 1min, lock it after 2min, suspend after 3min
-exec --no-startup-id xset dpms 60 120 180
-exec --no-startup-id light-locker --idle-hint --late-locking --lock-after-screensaver=60
-exec --no-startup-id xss-lock -v -- idle-suspend 180000
-exec --no-startup-id xset s off
+exec --no-startup-id exec xset dpms 0 0 120
+exec --no-startup-id exec light-locker --idle-hint --late-locking --lock-after-screensaver=60
+exec --no-startup-id exec xset s off
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@   +10%   && $refresh_i3status
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@   -10%   && $refresh_i3status
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@   +1%    && $refresh_i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@   -1%    && $refresh_i3status
 bindsym XF86AudioMute        exec --no-startup-id pactl set-sink-mute   @DEFAULT_SINK@   toggle && $refresh_i3status
 bindsym XF86AudioMicMute     exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
 
@@ -122,25 +121,25 @@ mode "resize" {
     bindsym Escape mode "default"
     bindsym $mod+r mode "default"
 }
-
 bindsym $mod+r mode "resize"
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-    status_command exec i3status++
+    i3bar_command  exec i3bar --transparency
+    status_command exec i3status-rs
     separator_symbol "|"
 
     colors {
-        # background #000000
+        background #00000066
         # statusline #acacac
         # separator  #444444
 
         #                   border  background text
-        focused_workspace  #84046D #84046D #ACACAC
+        focused_workspace  #351535 #351535 #dddddd
         # active_workspace   #222222 #404547 #ACACAC
-        # inactive_workspace #222222 #161616 #5B5B5B
-        urgent_workspace   #be63fa #c507a3 #DCDCDC
+        inactive_workspace #200720 #200720 #888888
+        urgent_workspace   #352535 #352535 #ffffff
         # binding_mode       #1F2327 #610000 #ACACAC
     }
 }
@@ -149,45 +148,28 @@ bar {
 bindsym $mod+Shift+minus move scratchpad
 bindsym $mod+minus       scratchpad show
 
-#bindsym $alt+Tab workspace       next_on_output
-#bindsym $alt+Shift+Tab workspace prev_on_output
-#bindsym $mod+Tab workspace       next_on_output
-#bindsym $mod+Shift+Tab workspace prev_on_output
-# bindsym $alt+Tab focus right
-# bindsym $alt+Shift+Tab focus left
-# exec --no-startup-id volctl
-exec --no-startup-id nitrogen --restore
-
-
-set $mode_system System (l) lock, (e) logout, (s) suspend, (h) hibernate, (r) reboot, (Shift+s) shutdown
-mode "$mode_system" {
-    bindsym l       exec --no-startup-id loginctl  lock-session, mode "default"
-    bindsym e       exec --no-startup-id i3-msg    exit,         mode "default"
-    bindsym s       exec --no-startup-id systemctl suspend,      mode "default"
-    bindsym h       exec --no-startup-id systemctl hibernate,    mode "default"
-    bindsym r       exec --no-startup-id systemctl reboot,       mode "default"
-    bindsym Shift+s exec --no-startup-id systemctl poweroff -i,  mode "default"
-
-    # back to normal: Enter or Escape
-    bindsym Return mode "default"
-    bindsym Escape mode "default"
-}
-
-bindsym $mod+Pause mode "$mode_system"
+exec --no-startup-id exec ~/.fehbg
+exec --no-startup-id exec xmodmap ~/.Xmodmap
+exec --no-startup-id exec picom -b
+exec --no-startup-id exec xiccd
 
 
 workspace_auto_back_and_forth yes
 
-bindsym $alt+Sys_Req exec --no-startup-id scrot -zfsb 'screenshots/%F-%T-$a-$wx$h.png'
-bindsym  Shift+Print exec --no-startup-id scrot -zo   '/tmp/screenshot.png'            -e 'xclip -selection clipboard -t image/png -i $f'
-bindsym        Print exec --no-startup-id scrot -z    'screenshots/%F-%T-$a-$wx$h.png'
+bindsym               Print exec --no-startup-id exec ~/bin/screenshot ""  ""
+bindsym       Control+Print exec --no-startup-id exec ~/bin/screenshot sel ""
+bindsym         Shift+Print exec --no-startup-id exec ~/bin/screenshot ""  save
+bindsym Control+Shift+Print exec --no-startup-id exec ~/bin/screenshot sel save
+#bindsym Control_L+Print exec --no-startup-id maim -B -m 10 | tee /tmp/screenshot.png | xclip -selection clipboard -t image/png -i; cp /tmp/screenshot.png "~/screenshots/$(date +"%F-%T-babtop-$(identify -format '%wx%h' /tmp/screenshot)").png"
+#bindsym $alt+Sys_Req exec --no-startup-id exec scrot -zfsb 'screenshots/%F-%T-$a-$wx$h.png'
+#bindsym  Shift+Print exec --no-startup-id exec scrot -zo   '/tmp/screenshot.png'            -e 'xclip -selection clipboard -t image/png -i2 $f'
 
 # keycode 244 (keysym 0x1008ff93, XF86Battery), same_screen YES,
-bindsym XF86ScreenSaver exec --no-startup-id loginctl lock-session
-bindsym XF86Battery     exec --no-startup-id xset dpms force off    # Fn+F2
+bindsym XF86ScreenSaver exec --no-startup-id exec loginctl lock-session
+bindsym XF86Battery     exec --no-startup-id exec xset dpms force off    # Fn+F2
 
-bindsym XF86MonBrightnessDown exec --no-startup-id adjust-screen-brightness -1
-bindsym XF86MonBrightnessUp   exec --no-startup-id adjust-screen-brightness +1
+bindsym XF86MonBrightnessDown exec --no-startup-id exec light -Ur 25
+bindsym XF86MonBrightnessUp   exec --no-startup-id exec light -Ar 25
 
 bindsym Control+$mod+Right move workspace to output right
 bindsym Control+$mod+Left  move workspace to output left
@@ -195,13 +177,13 @@ bindsym Control+$mod+Up    move workspace to output up
 bindsym Control+$mod+Down  move workspace to output down
 
 # https://github.com/cboddy/i3-workspace-names-daemon
-exec_always --no-startup-id i3-workspace-names-daemon -u -d " "
+exec_always --no-startup-id exec i3-workspace-names-daemon -u -d " "
 
 # class                 border  backgr. text    indicator child_border
-client.focused          #84046D #84046D #ffffff #be63fa   #84046D
-client.focused_inactive #331633 #5f2D6a #ffffff #483450   #5f446a
-client.unfocused        #1d1236 #0a051b #888888 #292d2e   #0a051b
-client.urgent           #2f343a #c507a3 #ffffff #c507a3   #c507a3
+client.focused          #351535 #351535 #dddddd #551555   #35153500
+client.focused_inactive #301030 #251025 #dddddd #402040   #20102000
+client.unfocused        #200720 #200720 #888888 #351555   #20072000
+client.urgent           #352535 #352535 #ffffff #453545   #35253500
 # client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
 
 client.background       #000000
