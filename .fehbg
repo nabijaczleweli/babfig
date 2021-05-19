@@ -1,0 +1,2 @@
+#!/bin/sh
+exec feh --no-fehbg --bg-fill --rotate="${1:-0}" -z ~/code/nabijaczleweli.github.io-dev/assets/wiggly-circle/
