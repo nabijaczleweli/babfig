@@ -1,0 +1,4 @@
+#!/bin/sh
+sinks="$(pw-play --list-targets | cut  -b '2-' | awk '/description=/ {gsub(/description=/, ""); $NF=""; print }')"
+sink="$(echo "$sinks" | awk '{$1 = ""; gsub(/"/, ""); $1=$1; print}' | dmenu)" || exit
+pactl set-default-sink "$(echo "$sinks" | grep "$sink" | cut -d: -f1)"
