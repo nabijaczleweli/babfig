@@ -5,13 +5,21 @@ message="$(git log --pretty=%B --no-show-signature -1)"
 
 [ $(git status --porcelain --untracked-files=no | wc -l) = 0 ] && git reset --soft HEAD^
 
-commit() {
-	[ -z "$1" ] && shift
-	git commit "$@" -nm "$pref$file1$op$file2: $message" || ret=1
+ret=0
+
+[ $# -gt 0 ] && {
+	fs=$(printf '%s, ' "$@")
+	git commit "$@" -nm "${fs%, }: $message" || ret=1
+	git commit      -nm "$message" || ret=1
+	exit $ret
 }
 
 git status --porcelain --untracked-files=no | {
-	ret=0
+	commit() {
+		[ -z "$1" ] && shift
+		git commit "$@" -nm "$pref$file1$op$file2: $message" || ret=1
+	}
+
 	while read -r status file1 op file2 _; do
 		echo "$status: $file1 $op $file2"
 	
