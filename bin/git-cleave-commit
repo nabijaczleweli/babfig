@@ -5,20 +5,26 @@ message="$(git log --pretty=%B --no-show-signature -1)"
 
 [ $(git status --porcelain --untracked-files=no | wc -l) = 0 ] && git reset --soft HEAD^
 
+commit() {
+	[ -z "$1" ] && shift
+	git commit "$@" -nm "$pref$file1$op$file2: $message" || ret=1
+}
+
 git status --porcelain --untracked-files=no | {
 	ret=0
-	while read -r status file; do
-		echo "$status: $file"
+	while read -r status file1 op file2 _; do
+		echo "$status: $file1 $op $file2"
 	
 		pref=
 		case "$status" in
 			M) ;;
 			A) pref="add " ;;
 			D) pref="remove " ;;
+			R) pref="rename "; op=" -> " ;;
 			*) pref="$status? "; ret=1 ;;	
 		esac
 
-		git commit -n "$file" -m "$pref$file: $message" || ret=1
+		commit "$file2" "$file1"
 	done
 	exit $ret
 }
