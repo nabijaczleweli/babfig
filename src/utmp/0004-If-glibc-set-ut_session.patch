@@ -1,0 +1,42 @@
+From b04384deb03237246f05ef474f209efe9d175fbb Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=D0=BD=D0=B0=D0=B1?= <nabijaczleweli@nabijaczleweli.xyz>
+Date: Thu, 28 Jul 2022 19:51:28 +0200
+Subject: [PATCH 4/5] If glibc, set ut_session
+X-Mutt-PGP: OS
+
+Also: ut_host is standard
+---
+ posix.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/posix.c b/posix.c
+index 297bc8a..791d618 100644
+--- a/posix.c
++++ b/posix.c
+@@ -68,6 +68,7 @@ addutmp(void)
+ {
+ 	unsigned ptyid;
+ 	char *pts, *cp, buf[5] = {'x'};
++	struct timespec now;
+ 
+ 	if (strlen(pw->pw_name) > sizeof(utmp.ut_user))
+ 		die("utmp:incorrect username %s", pw->pw_name);
+@@ -93,9 +94,12 @@ addutmp(void)
+ 	utmp.ut_type = USER_PROCESS;
+ 	strncpy(utmp.ut_user, pw->pw_name, sizeof(utmp.ut_user));
+ 	utmp.ut_pid = getpid();
+-	utmp.ut_tv.tv_sec = time(NULL);
+-	utmp.ut_tv.tv_usec = 0;
+-	 /* don't use non-standard fields host and session */
++	clock_gettime(CLOCK_REALTIME, &now);
++	utmp.ut_tv.tv_sec = now.tv_sec;
++	utmp.ut_tv.tv_usec = now.tv_nsec / 1000;
++#if __GLIBC__
++	utmp.ut_session = getsid(0);
++#endif
+ 
+ 	setegid(egid);
+ 	if(!pututxline(&utmp))
+-- 
+2.30.2
+
