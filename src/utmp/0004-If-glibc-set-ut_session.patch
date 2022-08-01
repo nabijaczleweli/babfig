@@ -1,7 +1,7 @@
 From b04384deb03237246f05ef474f209efe9d175fbb Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?=D0=BD=D0=B0=D0=B1?= <nabijaczleweli@nabijaczleweli.xyz>
 Date: Thu, 28 Jul 2022 19:51:28 +0200
-Subject: [PATCH 4/6] If glibc, set ut_session
+Subject: [PATCH 4/7] If glibc, set ut_session
 X-Mutt-PGP: OS
 
 Also: ut_host is standard

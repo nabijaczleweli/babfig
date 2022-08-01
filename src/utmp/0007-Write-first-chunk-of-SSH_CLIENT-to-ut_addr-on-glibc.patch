@@ -1,0 +1,50 @@
+From 12482bb2db84cfc57a6f603b9064711487ea47f5 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=D0=BD=D0=B0=D0=B1?= <nabijaczleweli@nabijaczleweli.xyz>
+Date: Mon, 1 Aug 2022 16:45:54 +0200
+Subject: [PATCH 7/7] Write first chunk of SSH_CLIENT to ut_addr* on glibc
+X-Mutt-PGP: OS
+
+---
+ posix.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/posix.c b/posix.c
+index b0c508f..d6bb735 100644
+--- a/posix.c
++++ b/posix.c
+@@ -26,6 +26,11 @@
+ #include <utmpx.h>
+ #endif
+ 
++#if __GLIBC__
++#include <sys/socket.h>
++#include <netdb.h>
++#endif
++
+ extern void die(const char *fmt, ...);
+ static struct utmpx utmp;
+ extern struct passwd *pw;
+@@ -102,6 +107,20 @@ addutmp(void)
+ 		if(cp)
+ 			*cp = '\0';
+ 		strncpy(utmp.ut_host, pts, sizeof(utmp.ut_host));
++#if __GLIBC__
++		struct addrinfo *addr;
++		if(getaddrinfo(pts, NULL, NULL, &addr) == 0) {
++			switch(addr->ai_family) {
++				case AF_INET:
++					utmp.ut_addr_v6[0] = ((struct sockaddr_in *)addr->ai_addr)->sin_addr.s_addr;
++					break;
++				case AF_INET6:
++					memcpy(utmp.ut_addr_v6, ((struct sockaddr_in6 *)addr->ai_addr)->sin6_addr.s6_addr, sizeof(utmp.ut_addr_v6));
++					break;
++			}
++			freeaddrinfo(addr);
++		}
++#endif
+ 		if(cp)
+ 			*cp = ' ';
+ 	}
+-- 
+2.30.2
+
