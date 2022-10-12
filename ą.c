@@ -14,8 +14,7 @@ int main() {
 
 		char name[4096];
 		UErrorCode err;
-		u_charName(c, U_UNICODE_CHAR_NAME, name, sizeof(name), &err);
-		if(!U_SUCCESS(err))
+		if(!u_charName(c, U_UNICODE_CHAR_NAME, name, sizeof(name), &err))
 			strcpy(name, "(no name)");
 
 		fprintf(stdout, "%lc\t(U+%04X, UTF-8 ", c, c);
