@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <wchar.h>
 #include <string.h>
-#include <errno.h>
 #include <locale.h>
 int main() {
 	setlocale(LC_ALL, "");
