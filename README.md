@@ -7,7 +7,7 @@ Mostly based on [previous work](//github.com/nabijaczleweli/topfig) for the [pre
 It's like [`i3status++`](//github.com/nabijaczleweli/topfig/blob/master/README.md#bini3status) but with a, like, seven-syscall loop instead
 
 ### [`secureboot`](secureboot)
-A DKMS sign helper for (semi-)automatic signing built modules and notes on generating keys.
+~~A DKMS sign helper for (semi-)automatic signing built modules~~ A work-around for [DKMS' lack of passphrased cert support]{//bugs.debian.org/1023029} and notes on generating keys.
 
 ### [`screen-rotator`](screen-rotator)
 Automatic screen rotation through the power of `/dev/iio:device0` and unsavoury use of xinput(1).
