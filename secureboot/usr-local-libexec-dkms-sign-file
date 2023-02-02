@@ -1,0 +1,11 @@
+#!/bin/sh -x
+{
+	[ -z "$KBUILD_SIGN_PIN" ] && [ -r /root/secureboot/creds.sh ] && . /root/secureboot/creds.sh
+	[ -z "$KBUILD_SIGN_PIN" ] && read -rp 'DB certificate password: ' KBUILD_SIGN_PIN
+	export KBUILD_SIGN_PIN
+} < /dev/tty > /dev/tty 2>&1
+
+kver="$(uname -r)"
+kver="${kver%.*}"
+
+exec "/usr/lib/linux-kbuild-$kver/scripts/sign-file" "$@"
