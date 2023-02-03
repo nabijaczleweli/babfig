@@ -13,10 +13,10 @@
 // The matrices are correct, but the xrandr output orientation is rotated once left to accomodate this device's orientation in the chassis.
 #define SYSFS "/sys/bus/iio/devices/iio:device0/"
 
-const char * const mtx_ident[]   = {"1", "0", "0", "0", "1", "0", "0", "0", "1"};
-const char * const mtx_inverse[] = {"-1", "0", "1", "0", "-1", "1", "0", "0", "1"};
-const char * const mtx_left[]    = {"0", "-1", "1", "1", "0", "0", "0", "0", "1"};
-const char * const mtx_right[]   = {"0", "1", "0", "-1", "0", "1", "0", "0", "1"};
+static const char * const mtx_ident[]   = {"1", "0", "0", "0", "1", "0", "0", "0", "1"};
+static const char * const mtx_inverse[] = {"-1", "0", "1", "0", "-1", "1", "0", "0", "1"};
+static const char * const mtx_left[]    = {"0", "-1", "1", "1", "0", "0", "0", "0", "1"};
+static const char * const mtx_right[]   = {"0", "1", "0", "-1", "0", "1", "0", "0", "1"};
 
 int main() {
 	std::signal(SIGCHLD, SIG_IGN);
