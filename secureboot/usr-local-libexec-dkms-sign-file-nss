@@ -1,0 +1,21 @@
+#!/bin/sh -x
+# sign-file algo key cert module
+
+kver="$(uname -r)"
+kver="${kver%.*}"
+
+key=
+store="sql:${2%/cert9.db}"
+
+[ -n "$key" ] ||
+	key="$(certutil -d "$store" -L |
+		sed -n 's/ *[PpCcTu]*,[PpCcTu]*,[PpCcTu]*$//p' |
+		while IFS= read -r key; do
+			certutil -d "$store" -Lrn "$key" | cmp -s "$3" && { printf '%s' "$key"; break; }
+		done)" || {
+		printf '%s: no key matching %s in %s\n' "$0" "$3" "$store" >&2
+		exit 1
+	}
+
+p7sign -d "$store" -a "$1" -u 6 -k "$key" < "$4" |
+  "/usr/lib/linux-kbuild-$kver/scripts/sign-file" -s /dev/stdin "$1" "$3" "$4"

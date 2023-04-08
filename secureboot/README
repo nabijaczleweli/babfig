@@ -1,6 +1,12 @@
-openssl req -x509 -newkey rsa:4096 -outform der -out pk.der  -days 3650 -keyout pk.key -subj '/C=PL/L=Krakow/CN=babtop.nabijaczleweli.xyz'
-openssl req -x509 -newkey rsa:4096 -outform der -out kek.der -days 3650 -keyout kek.key -subj '/C=PL/OU=KEK/L=Krakow/CN=babtop.nabijaczleweli.xyz'
-openssl req -x509 -newkey rsa:4096 -outform der -out db.der  -days 3650 -keyout db.key -subj '/C=PL/OU=DB/L=Krakow/CN=babtop.nabijaczleweli.xyz'
+Chronologically: usr-local-libexec-dkms-sign-helper: March 2021
+       broken by https://bugs.debian.org/1023029
+   replaced with etc-dkms-framework.conf.d-get-pin.conf: October 2022
+       broken by environment filtering in recent DKMSes
+   replaced with usr-local-libexec-dkms-sign-file: February 2023
 
-# All certs imported respectively, additionally debian-uefi-cs.der (taken from src:shim) imported into DB
-# /etc/dkms/framework.conf: sign_tool="/usr/local/libexec/dkms-sign-helper"
+See setup.openssl for the setup, it's relatively sane and only needs to read in the passphrase for sign-file.
+
+   Replaced with usr-local-libexec-dkms-sign-file-nss: April 2023
+
+See setup.nss; broader, less sane, setup, but it does use the NSS cert store.
+Needs libnss-tools with https://phabricator.services.mozilla.com/D174327 and its children.
