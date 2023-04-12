@@ -2,5 +2,5 @@ openssl req -x509 -newkey rsa:4096 -outform der -out pk.der  -days 3650 -keyout 
 openssl req -x509 -newkey rsa:4096 -outform der -out kek.der -days 3650 -keyout kek.key -subj '/C=PL/OU=KEK/L=Krakow/CN=babtop.nabijaczleweli.xyz'
 openssl req -x509 -newkey rsa:4096 -outform der -out db.der  -days 3650 -keyout db.key -subj '/C=PL/OU=DB/L=Krakow/CN=babtop.nabijaczleweli.xyz'
 
-# All certs imported respectively, additionally debian-uefi-cs.der (taken from src:shim) imported into DB
+# All certs imported respectively, additionally debian-uefi-cs.der (taken from src:shim, canonical upstream https://dsa.debian.org/secure-boot-ca) imported into DB
 # /etc/dkms/framework.conf: sign_tool="/usr/local/libexec/dkms-sign-helper"

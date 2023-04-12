@@ -1,17 +1,17 @@
 DB/PK/KEK imported into their respective variables.
 
-Really, this could just be a self-signed DB/MoK.
+Really, this could just be a self-signed DB/MoK and https://dsa.debian.org/secure-boot-ca in DB as well.
 
 
 /etc/dkms/framework.conf:
   sign_file="/usr/local/libexec/dkms-sign-file-nss"
-  
-  mok_signing_key=/root/secureboot/babtop_sb_db/cert9.db
-  mok_certificate=/root/secureboot/db2023.der
+
+  mok_signing_key="pkcs11:token=NSS%20Certificate%20DB;object=babtop%20DB%202023"
+  mok_certificate=/root/secureboot/cert9.db
 
 
 
-$ certutil -S -d sql:babtop_sb_db -n "babtop CA" -s "C=PL,L=Kraków,CN=babtop.nabijaczleweli.xyz SecureBoot CA" -t ,,CT -x -v 360 -12567 root@babtop.nabijaczleweli.xyz,nabijaczleweli/babtop@nabijaczleweli.xyz -8 babtop.nabijaczeleweli.xyz
+$ certutil -S -d sql:secureboot -n "babtop CA" -s "C=PL,L=Kraków,CN=babtop.nabijaczleweli.xyz SecureBoot CA" -t ,,CT -x -v 360 -12567 root@babtop.nabijaczleweli.xyz,nabijaczleweli/babtop@nabijaczleweli.xyz -8 babtop.nabijaczeleweli.xyz
 
 A random seed must be generated that will be used in the
 creation of your key.  One of the easiest ways to create a
@@ -170,7 +170,7 @@ Is this a critical extension [y/N]?
 y
 
 
-$ certutil -L -d sql:babtop_sb_db/ -n 'babtop CA' -a | openssl x509 -text
+$ certutil -L -d sql:secureboot/ -n 'babtop CA' -a | openssl x509 -text
 Certificate:
     Data:
         Version: 3 (0x2)
@@ -256,7 +256,7 @@ z+UgY0Dtl+tPhAhHdSeuzhB6mvALEaZ8y6OZVUVTArD6RMpA5STAOg==
 -----END CERTIFICATE-----
 
 
-$ certutil -S -d sql:babtop_sb_db -c "babtop CA" -n 'babtop KEK 2023' -s "C=PL,L=Kraków,CN=babtop.nabijaczleweli.xyz SecureBoot KEK 2023" -t ,,  -v 12 -26
+$ certutil -S -d sql:secureboot -c "babtop CA" -n 'babtop KEK 2023' -s "C=PL,L=Kraków,CN=babtop.nabijaczleweli.xyz SecureBoot KEK 2023" -t ,,  -v 12 -26
 
 A random seed must be generated that will be used in the
 creation of your key.  One of the easiest ways to create a
@@ -302,7 +302,7 @@ Is this a CA certificate [y/N]?
 Enter the path length constraint, enter to skip [<0 for unlimited path]: >
 Is this a critical extension [y/N]?
 
-$ certutil -L -d sql:babtop_sb_db/ -n 'babtop KEK 2023' -a | openssl x509 -text -nameopt utf8
+$ certutil -L -d sql:secureboot/ -n 'babtop KEK 2023' -a | openssl x509 -text -nameopt utf8
 Certificate:
     Data:
         Version: 3 (0x2)
@@ -383,7 +383,7 @@ MUMUcyywQ2KSLhsYrslvZfw+mWLyKtlPY4QkC54=
 (same for DB and PK)
 DB also -5 and Object Signing and -1 and Digital Signature
 
-$ certutil -L -d sql:babtop_sb_db/
+$ certutil -L -d sql:secureboot/
 
 Certificate Nickname                                         Trust Attributes
                                                              SSL,S/MIME,JAR/XPI
@@ -395,7 +395,7 @@ babtop PK 2023                                               u,u,u
 
 
 
-$ certutil -L -d sql:babtop_sb_db/  -n 'babtop KEK 2023' -r > kek2023.der
-$ certutil -L -d sql:babtop_sb_db/  -n 'babtop DB 2023'  -r > db2023.der
-$ certutil -L -d sql:babtop_sb_db/  -n 'babtop PK 2023'  -r > pk2023.der
-$ certutil -L -d sql:babtop_sb_db/  -n 'babtop CA'  -r > ca.der
+$ certutil -L -d sql:secureboot/  -n 'babtop KEK 2023' -r > kek2023.der
+$ certutil -L -d sql:secureboot/  -n 'babtop DB 2023'  -r > db2023.der
+$ certutil -L -d sql:secureboot/  -n 'babtop PK 2023'  -r > pk2023.der
+$ certutil -L -d sql:secureboot/  -n 'babtop CA'  -r > ca.der
