@@ -1,8 +1,12 @@
 #!/bin/sh
 fact() {
-	[ "$1" -le 1 ] && { echo 1; return; }
-	x="$1"
-	echo $(( $(fact $(( x - 1 )) ) * x ))
+	ret=$1; x=$1
+	x=$(( x - 1 ))
+	while [ $x -ge 2 ]; do
+		ret=$(( ret * x ))
+		x=$(( x - 1 ))
+	done
+	echo $ret
 }
 
 trap 'rm -rf "$tmpdir"; exit' EXIT INT
