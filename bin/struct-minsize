@@ -1,0 +1,54 @@
+#!/bin/sh
+fact() {
+	[ "$1" -le 1 ] && { echo 1; return; }
+	x="$1"
+	echo $(( $(fact $(( x - 1 )) ) * x ))
+}
+
+trap 'rm -rf "$tmpdir"; exit' EXIT INT
+tmpdir="$(mktemp -d)/"
+cd "$tmpdir" || exit
+
+cat > membussy
+perms="$(fact "$(wc -l < membussy)")"
+
+ln membussy "hashed.$(b2sum < membussy)"
+hashed=1
+while [ $hashed -lt $perms ]; do
+	shuf membussy > tmp
+	hash="$(b2sum < tmp)"
+	[ -e "hashed.$hash" ] && continue
+	mv tmp "hashed.$hash"
+	hashed=$(( hashed + 1 ))
+done
+
+for f in hashed.*; do
+	{
+		printf '#include %s\n' '<stdint.h>' '<stddef.h>' '<fcntl.h>' '<stdio.h>' '<stdbool.h>'
+		printf '%s\n' 'struct totest {'
+		cat "$f"
+		printf '%s\n' '};' \
+		              'int main() { printf("%zu\n", sizeof(struct totest)); }'
+	} | ${CC-cc} $CFLAGS -xc - -o "$f.out" &
+done
+wait
+smallest=2147483647
+smallest_f=
+for out in hashed.*.out; do
+	s="$("./$out")"
+	if [ "$s" -lt "$smallest" ]; then
+		smallest="$s"
+		smallest_f="${out%.out}"
+	elif [ "$s" -eq "$smallest" ]; then
+		smallest_f="$smallest_f
+${out%.out}"
+	fi
+done
+
+IFS='
+'
+printf 'Smallest: %s (%s/%s results)\n' "$smallest" "$(printf '%s\n' "$smallest_f" | wc -l)" "$perms" >&2
+tail -c+1 $smallest_f
+for f in $smallest_f; do
+	[ "$f" -ef membussy ] && { echo Input layout optimal >&2; break; }
+done
