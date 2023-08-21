@@ -1,4 +1,5 @@
 #!/bin/sh
-sinks="$(pw-play --list-targets | cut  -b '2-' | awk '/description=/ {gsub(/description=/, ""); $NF=""; print }')"
-sink="$(echo "$sinks" | awk '{$1 = ""; gsub(/"/, ""); $1=$1; print}' | dmenu)" || exit
-pactl set-default-sink "$(echo "$sinks" | grep "$sink" | cut -d: -f1)"
+sinks="$(pw-cli list-objects | split -p '^	id' --filter 'paste -s' | grep -F 'media.class = "Audio/Sink"' | tr -s '\t' '\n' | grep -e ^id -e ^node.description | paste - -)"
+#id 39, type PipeWire:Interface:Node/3	node.description = "Built-in Audio Analog Stereo"
+sink="$(printf '%s\n' "$sinks" | cut -d\" -f2 | dmenu)" || exit
+wpctl set-default "$(printf '%s\n' "$sinks" | grep -F "$sink" | cut -d, -f1 | cut -d' ' -f2)"
