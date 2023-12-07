@@ -6,5 +6,18 @@ store="sql:${3%/cert9.db}"
 trap 'rm -f "$sig"' EXIT INT
 sig="$(mktemp)"
 
-p7sign -d "$store" -a "$1" -u 6 -k "$2" < "$4" > "$sig" &&
-  "/usr/lib/linux-kbuild-${kernelver%.*}/scripts/sign-file" -s "$sig" "$1" /ENOENT "$4"
+p7alg="$1"
+case "$p7alg" in
+	sha256)	p7alg=SHA-256 ;;
+esac
+
+signfile=
+for suff in "$kernelver" "${kernelver%-*}" "${kernelver%.*}"; do
+	[ -x "/usr/lib/linux-kbuild-$suff/scripts/sign-file" ] &&
+		signfile="/usr/lib/linux-kbuild-$suff/scripts/sign-file" &&
+		break
+done
+[ -n "$signfile" ] || { echo "No sign-file!"; exit 1; }
+
+p7sign -d "$store" -a "$p7alg" -u 6 -k "$2" < "$4" > "$sig" &&
+  "$signfile" -s "$sig" "$1" /ENOENT "$4"
