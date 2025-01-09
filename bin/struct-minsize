@@ -28,12 +28,12 @@ done
 
 for f in hashed.*; do
 	{
-		printf '#include %s\n' '<stdint.h>' '<stddef.h>' '<fcntl.h>' '<stdio.h>' '<stdbool.h>'
+		printf '#include %s\n' '<stdint.h>' '<stddef.h>' '<fcntl.h>' '<stdio.h>' '<stdbool.h>' '<sys/types.h>'
 		printf '%s\n' 'struct totest {'
 		cat "$f"
 		printf '%s\n' '};' \
 		              'int main() { printf("%zu\n", sizeof(struct totest)); }'
-	} | ${CC-cc} $CFLAGS -xc - -o "$f.out" &
+	} | ${CC-cc} $CFLAGS -D_GNU_SOURCE -xc - -o "$f.out" &
 done
 wait
 smallest=2147483647
