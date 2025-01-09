@@ -12,7 +12,7 @@ int main() {
 			continue;
 
 		char name[4096];
-		UErrorCode err;
+		UErrorCode err = 0;
 		if(!u_charName(c, U_UNICODE_CHAR_NAME, name, sizeof(name), &err))
 			strcpy(name, "(no name)");
 
